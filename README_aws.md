@@ -161,16 +161,22 @@ Chạy script và điền kết quả vào bảng:
 
 | Metric | Kết quả |
 |---|---|
-| Thời gian load data | |
-| Thời gian training | |
-| Best iteration | |
-| AUC-ROC | |
-| Accuracy | |
-| F1-Score | |
-| Precision | |
-| Recall | |
-| Inference latency (1 row) | |
-| Inference throughput (1000 rows) | |
+| Thời gian load data | 2,283906 giây |
+| Thời gian training | 2,195902 giây |
+| Best iteration | 1 |
+| AUC-ROC | 0,938095 |
+| Accuracy | 99,906956% |
+| F1-Score | 0,764444 |
+| Precision | 67,716535% |
+| Recall | 87,755102% |
+| Inference latency (1 row) | 1,168470 ms (trung bình 100 lần đo) |
+| Inference throughput (1000 rows) | 713.008,64 dòng/giây (batch 1.000 dòng; trung bình 20 lần đo) |
+
+**Ảnh output benchmark (2 phần):**
+
+![Output benchmark: lệnh chạy, thời gian huấn luyện và các chỉ số đánh giá](images/4.4_benchmark_result_1.png)
+
+![Output benchmark: tốc độ inference, môi trường chạy và đường dẫn file kết quả](images/4.4_benchmark_result_2.png)
 
 ---
 
@@ -191,6 +197,30 @@ ip -s link
 ```
 Bạn cũng có thể xem các chỉ số này trên **EC2 Console -> Instances -> chọn Compute Node -> tab Monitoring** (biểu đồ `CPUUtilization`, `NetworkIn`, `NetworkOut`).
 
+**Kết quả ghi nhận sau benchmark:**
+
+| Tài nguyên | Kết quả từ ảnh chụp |
+|---|---|
+| CPU (`top`) | 100,0% idle, tương đương khoảng 0% sử dụng tại thời điểm chụp; 107 tác vụ, gồm 1 đang chạy và 106 đang ngủ |
+| RAM (`free -h`) | Tổng 3,7 GiB; đang dùng 252 MiB; trống 1,7 GiB; buff/cache 1,8 GiB; khả dụng 3,2 GiB |
+| Swap | 0 B |
+| Network RX (`ens5`) | Nhận 282.664.316 bytes, 194.767 gói tin; 0 lỗi, 0 gói bị drop |
+| Network TX (`ens5`) | Gửi 1.227.977 bytes, 13.303 gói tin; 0 lỗi, 0 gói bị drop |
+
+Tại thời điểm chụp sau benchmark, CPU gần như nhàn rỗi và RAM còn khả dụng khoảng 3,2 GiB. Các số liệu này phản ánh trạng thái sau khi chương trình kết thúc, không phải mức sử dụng tài nguyên cao nhất trong lúc huấn luyện. RX/TX là bộ đếm lưu lượng tích lũy của interface `ens5`, không phải tốc độ mạng hoặc lưu lượng riêng của benchmark.
+
+**CPU — lệnh `top`:**
+
+![CPU sau benchmark qua lệnh top](images/5.1_cpu_top.png)
+
+**RAM — lệnh `free -h`:**
+
+![RAM và swap sau benchmark](images/5.1_ram_free.png)
+
+**Network — lệnh `ip -s link`:**
+
+![Thống kê RX và TX của interface ens5](images/5.1_network_usage.png)
+
 ### 5.2: Billing / Cost Dashboard
 1. Vào [AWS Billing Console](https://console.aws.amazon.com/billing/) -> **Bills** hoặc **Cost Explorer**.
 2. Chọn ngày hôm nay để xem chi phí hiện tại.
@@ -206,22 +236,30 @@ Bạn cũng có thể xem các chỉ số này trên **EC2 Console -> Instances 
 | ALB | Application Load Balancer | ~$0.008 |
 | **Tổng ước tính** | | **~$0.10/giờ** |
 
-### 5.3: GPU usage (Tùy chọn)
-Chỉ áp dụng nếu bạn đã làm Phụ lục GPU + LLM ở cuối bài. Kiểm tra bằng lệnh `nvidia-smi` trên Compute Node (chi tiết ở Phụ lục).
-
 ---
 
 ## Phần 6: Tiêu chí nộp bài (Deliverables)
 
-Để hoàn thành Lab 16, sinh viên cần thu thập và nộp các kết quả sau:
-1. **Screenshot terminal** chạy `python3 benchmark.py` với toàn bộ output kết quả.
-2. **File `benchmark_result.json`** chứa metrics đầy đủ (training time, AUC, inference latency, throughput...).
-3. **Screenshot tài nguyên**: `top`/`free -h` (hoặc EC2 Monitoring tab) thể hiện CPU/RAM/Network usage.
-4. **Screenshot AWS Billing/Cost Dashboard** thể hiện các dịch vụ đang phát sinh chi phí (EC2, NAT Gateway).
-5. **Mã nguồn:** Nén thư mục `terraform/` đã chạy thành công.
-6. **Báo cáo ngắn** (5-10 dòng): nhận xét về kết quả training time, AUC, inference speed trên CPU.
+Checklist hồ sơ nộp bài — luồng CPU:
 
-*(Nếu bạn làm thêm Phụ lục GPU + LLM, có thêm các mục nộp bài riêng — xem cuối Phụ lục.)*
+- [x] **Screenshot terminal benchmark:** đã chèn 2 ảnh toàn bộ output tại phần 4.4.
+- [x] **File kết quả:** [benchmark_result.json](terraform/benchmark_result.json) chứa đầy đủ metrics; bảng kết quả ở phần 4.4.
+- [x] **Screenshot tài nguyên:** đã chèn ảnh CPU, RAM và Network, kèm nhận xét tại phần 5.1.
+- [x] **Ghi nhận mục Billing nộp bổ sung sau:** ảnh AWS Billing/Cost Dashboard ở phần 5.2 hiện chưa có.
+- [x] **Mã nguồn:** đã đóng gói thư mục `terraform/`; liên kết ZIP nằm trong báo cáo ngắn bên dưới.
+- [x] **Báo cáo ngắn:** đã ghi nhận xét về training time, AUC và inference trên CPU bên dưới.
+
+### Báo cáo ngắn
+
+1. Benchmark sử dụng 284.807 giao dịch với 30 đặc trưng, chạy trên CPU với 2 luồng.
+2. Dữ liệu được chia thành 60% training, 20% validation và 20% test; validation dùng cho early stopping, test dùng để đánh giá cuối.
+3. Thời gian tải dữ liệu khoảng 2,284 giây và huấn luyện khoảng 2,196 giây.
+4. Mô hình đạt AUC-ROC 0,9381 và F1-score 0,7644 trên tập test.
+5. Recall đạt 87,76%, trong khi Precision đạt 67,72%, cho thấy vẫn có các cảnh báo gian lận sai.
+6. Độ trễ trung bình cho một dòng là 1,168 ms; throughput với batch 1.000 dòng đạt khoảng 713.009 dòng/giây sau bước khởi động.
+7. Best iteration bằng 1 góp phần giúp mô hình dự đoán nhanh; Accuracy 99,91% cần được đánh giá cùng Precision, Recall và F1 do dữ liệu mất cân bằng.
+8. Mã nguồn và kết quả được đóng gói trong [terraform_submission.zip](terraform_submission.zip), gồm mã Terraform, script khởi tạo, script benchmark, kết quả JSON, file khóa phiên bản provider và `requirements.txt`; không kèm khóa SSH, thông tin xác thực, Terraform state hoặc cache `.terraform/`.
+9. Trong lần chạy thực tế, bước cài `python3-pip` tự động thất bại nên thư viện được cài trong môi trường `~/ml-env`; người chạy lại cần chuẩn bị môi trường Python và tạo khóa SSH riêng theo bước 2.2.
 
 ---
 
@@ -234,72 +272,3 @@ Chạy lệnh sau trong thư mục `terraform`:
 terraform destroy
 ```
 Gõ `yes` khi được hỏi. Quá trình xóa sẽ mất khoảng 5 phút. Hãy đợi đến khi terminal báo `Destroy complete!` để chắc chắn mọi thứ đã bị xóa.
-
----
-
-## Phụ lục (Tùy chọn — Bài tập nâng cao): Triển khai GPU + LLM Inference (vLLM)
-
-> Phần này **không bắt buộc**. Nó chỉ dành cho các bạn muốn thử sức thêm và có tài khoản AWS xin được quota GPU. Việc hoàn thành hay không hoàn thành phần này **không ảnh hưởng** đến việc đạt yêu cầu của Lab 16 (Phần 1-7 ở trên).
-
-Mục tiêu: triển khai mô hình ngôn ngữ lớn (LLM — `google/gemma-4-E2B-it`) lên một máy chủ GPU (NVIDIA T4) nằm an toàn trong Private VPC, cung cấp API truy cập ra bên ngoài qua Load Balancer, dùng Docker/vLLM.
-
-### A.1: Tăng hạn mức vCPU cho GPU (Rất quan trọng)
-Theo mặc định, AWS khóa hạn mức sử dụng máy chủ GPU của các tài khoản mới ở mức 0 vCPU để bảo mật. Bạn cần mở khóa để chạy được instance `g4dn.xlarge` (cần 4 vCPU).
-1. Trên thanh tìm kiếm của AWS Console, gõ **Service Quotas** và chọn nó.
-2. Menu trái chọn **AWS services** -> tìm và chọn **Amazon Elastic Compute Cloud (Amazon EC2)**.
-3. Ở ô tìm kiếm của Quotas, gõ `Running On-Demand G and VT instances`.
-4. Chọn nó và click **Request quota increase**.
-5. Nhập số **4** (tương đương 4 vCPU cho 1 máy `g4dn.xlarge`).
-*Lưu ý: AWS có thể mất từ vài phút đến vài giờ để duyệt yêu cầu này. Nếu bị từ chối hoặc chưa duyệt kịp, bạn hoàn toàn có thể bỏ qua phần Phụ lục này — nó là tùy chọn.*
-
-### A.2: Lấy Hugging Face Token
-Mô hình `google/gemma-4-E2B-it` là một mô hình bị giới hạn (gated model). Bạn cần cấp quyền truy cập cho Terraform.
-1. Đăng nhập [Hugging Face](https://huggingface.co/).
-2. Vào trang của model [google/gemma-4-E2B-it](https://huggingface.co/google/gemma-4-E2B-it) và đồng ý với điều khoản (Accept license).
-3. Vào **Settings** -> **Access Tokens** -> Tạo một token (quyền Read) và copy lại.
-
-### A.3: Chuyển hạ tầng sang GPU + vLLM
-Hạ tầng Terraform đã hỗ trợ sẵn việc bật GPU thông qua biến `enable_gpu` — bạn không cần sửa code, chỉ cần khai báo biến môi trường:
-```bash
-cd terraform
-export TF_VAR_enable_gpu=true
-export TF_VAR_hf_token="<DÁN_TOKEN_HUGGING_FACE_CỦA_BẠN_VÀO_ĐÂY>"
-terraform apply
-```
-Gõ `yes` khi được hỏi. Terraform sẽ thay thế Compute Node CPU hiện tại bằng một node GPU (`g4dn.xlarge`, Deep Learning AMI) chạy Docker/vLLM.
-
-> **Quan trọng:** Nếu bạn đã destroy hạ tầng CPU ở Phần 7, việc apply lại với `enable_gpu=true` sẽ tạo toàn bộ hạ tầng từ đầu (~10-15 phút). Nếu hạ tầng CPU vẫn đang chạy, Terraform sẽ chỉ thay thế Compute Node, các phần còn lại (VPC, Bastion, ALB...) được giữ nguyên.
-
-### A.4: Kiểm tra AI Endpoint (Inference)
-Sau khi apply xong, GPU Node vẫn đang ngầm tải Docker image (vLLM) và model weights (~vài GB) từ Hugging Face. **Bạn cần đợi thêm 5-10 phút** để model sẵn sàng.
-
-Thay thế URL của ALB bạn nhận được (output `alb_dns_name`) vào lệnh dưới đây và chạy thử:
-```bash
-curl -X POST http://<THAY_BẰNG_ALB_DNS_NAME_CỦA_BẠN>/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "google/gemma-4-E2B-it",
-    "messages": [
-      {"role": "system", "content": "Bạn là một trợ lý AI hữu ích."},
-      {"role": "user", "content": "Hãy giải thích Bastion Host trong AWS là gì?"}
-    ],
-    "max_tokens": 150
-  }'
-```
-Nếu nhận được câu trả lời từ AI, chúc mừng bạn đã triển khai thành công! Hãy ghi lại tổng thời gian (Cold start time) từ lúc chạy `terraform apply` đến lúc nhận được API response đầu tiên.
-
-### A.5: Kiểm tra GPU usage
-SSH vào GPU Node qua Bastion (như Bước 4.1) rồi chạy:
-```bash
-nvidia-smi
-```
-để xem GPU utilization, VRAM usage, và tiến trình Docker/vLLM đang chạy.
-
-### A.6: Tiêu chí nộp bài (Phụ lục GPU + LLM)
-Nếu làm thêm phần này, nộp bổ sung các mục sau:
-1. **Screenshot API gọi thành công:** lệnh curl và câu trả lời của AI.
-2. **Report Cold Start Time:** tổng thời gian triển khai (Mục tiêu: < 15 phút cho instance T4).
-3. **Screenshot `nvidia-smi`** thể hiện GPU usage khi model đang chạy.
-
-### A.7: Dọn dẹp
-Dù kết thúc ở CPU hay đã chuyển sang GPU, bước dọn dẹp vẫn là chạy `terraform destroy` trong thư mục `terraform` (xem Phần 7). GPU EC2 (`g4dn.xlarge`) tính phí theo giờ và **đắt hơn đáng kể** so với CPU node — đừng quên destroy ngay sau khi test xong.

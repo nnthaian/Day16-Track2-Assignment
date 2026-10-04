@@ -1,0 +1,10 @@
+# Python dependencies for the CPU LightGBM lab in README_aws.md.
+lightgbm
+scikit-learn
+pandas
+numpy
+kaggle
+
+# Install AWS CLI v2, Terraform and OpenSSH separately.
+# The optional GPU appendix runs vLLM inside Docker.
+# winget install --id Hashicorp.Terraform -e
