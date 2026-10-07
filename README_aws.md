@@ -226,6 +226,10 @@ Tại thời điểm chụp sau benchmark, CPU gần như nhàn rỗi và RAM c�
 2. Chọn ngày hôm nay để xem chi phí hiện tại.
 3. Chụp màn hình thể hiện các dịch vụ đang phát sinh chi phí (EC2, NAT Gateway).
 
+**AWS Billing / Cost Dashboard:**
+
+![AWS Billing / Cost Dashboard](images/5.2_billings.png)
+
 **Ước tính chi phí/giờ (us-east-1) cho luồng CPU mặc định:**
 
 | Dịch vụ | Instance/Loại | Chi phí/giờ |
@@ -245,7 +249,7 @@ Checklist hồ sơ nộp bài — luồng CPU:
 - [x] **Screenshot terminal benchmark:** đã chèn 2 ảnh toàn bộ output tại phần 4.4.
 - [x] **File kết quả:** [benchmark_result.json](terraform/benchmark_result.json) chứa đầy đủ metrics; bảng kết quả ở phần 4.4.
 - [x] **Screenshot tài nguyên:** đã chèn ảnh CPU, RAM và Network, kèm nhận xét tại phần 5.1.
-- [x] **Ghi nhận mục Billing nộp bổ sung sau:** ảnh AWS Billing/Cost Dashboard ở phần 5.2 hiện chưa có.
+- [x] **Ghi nhận mục Billing:** đã chèn ảnh AWS Billing/Cost Dashboard ở phần 5.2.
 - [x] **Mã nguồn:** đã đóng gói thư mục `terraform/`; liên kết ZIP nằm trong báo cáo ngắn bên dưới.
 - [x] **Báo cáo ngắn:** đã ghi nhận xét về training time, AUC và inference trên CPU bên dưới.
 
